@@ -1,0 +1,19 @@
+[package]
+
+name = "sprite"
+version = "0.0.1"
+authors = ["tioover <tioover@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/tioover/rier-sprite.git"
+description = "A sprite support library for rier."
+
+
+[lib]
+name = "sprite"
+path = "src/lib.rs"
+
+[dependencies]
+glium = "*"
+[dependencies.rier]
+git = "https://github.com/tioover/rier.git"

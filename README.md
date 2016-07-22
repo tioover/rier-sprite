@@ -1,2 +1,2 @@
 # rier-sprite
-Rier sprite support library
+A sprite support library for [Rier](https://github.com/tioover/rier) .
