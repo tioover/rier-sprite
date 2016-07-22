@@ -1,5 +1,5 @@
 use rier::{Id, Transform, Camera2D, texture};
-use rier::render::{Frame, DrawError, Renderer};
+use rier::render::Renderer;
 use graphics::Graphics;
 
 
@@ -26,10 +26,8 @@ impl Sprite {
 
     /// Renders this sprite.
     pub fn render(&self,
-                  target: &mut Frame,
                   renderer: &Renderer<Graphics>,
-                  camera: &Camera2D)
-                  -> Result<(), DrawError> {
-        self.graphics.render(target, renderer, camera, &self.transform)
+                  camera: &Camera2D) {
+        self.graphics.render(renderer, camera, &self.transform)
     }
 }

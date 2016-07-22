@@ -1,6 +1,5 @@
-use rier::{Context, Transform, Camera2D, AsMatrix, Cache, texture, mesh};
+use rier::{Gfx, Transform, Camera2D, AsMatrix, Cache, texture, mesh};
 use rier::render;
-use rier::render::{Frame, DrawError, Renderer};
 
 
 type Mesh = mesh::Mesh<Vertex>;
@@ -65,7 +64,7 @@ impl Graphics {
     }
 
     #[cfg_attr(rustfmt, rustfmt_skip)]
-    fn get_mesh<'a>(&'a self, context: &Context) -> &'a Mesh {
+    fn get_mesh<'a>(&'a self, gfx: &Gfx) -> &'a Mesh {
         self.mesh_cache.get(|| {
             // Generate mash.
             let (width, height) = (self.width, self.height);
@@ -76,17 +75,15 @@ impl Graphics {
                            Vertex::new(width,    0.0, x + w, y + 0),
                            Vertex::new(width, height, x + w, y + h),];
             let indices = [0, 1, 2, 3, 2, 0];
-            Mesh::with_indices(context, &verties, &indices).unwrap()
+            Mesh::with_indices(gfx, &verties, &indices).unwrap()
         })
     }
 
     /// Renders this sprite.
     pub fn render(&self,
-                  target: &mut Frame,
-                  renderer: &Renderer<Self>,
+                  renderer: &render::Renderer<Self>,
                   camera: &Camera2D,
-                  transform: &Transform)
-                  -> Result<(), DrawError> {
+                  transform: &Transform) {
 
 
         let camera = camera.array();
@@ -100,7 +97,7 @@ impl Graphics {
             transform: *transform,
         };
 
-        let mesh = self.get_mesh(&renderer.context);
-        renderer.draw(target, mesh, &uniforms)
+        let mesh = self.get_mesh(&renderer.gfx);
+        renderer.draw(mesh, &uniforms).unwrap();
     }
 }

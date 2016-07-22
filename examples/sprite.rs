@@ -1,14 +1,14 @@
 extern crate rier;
-extern crate sprite;
+extern crate rier_sprite;
 
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::cell::RefCell;
 use rier::texture;
-use rier::{Context, WindowEvent, Camera2D};
+use rier::{Context, Gfx, WindowEvent, Camera2D};
 use rier::loader::Resource;
 use rier::event::{Notifier, Return};
-use sprite::Sprite;
+use rier_sprite::Sprite;
 
 
 struct Block {
@@ -16,10 +16,10 @@ struct Block {
 }
 
 impl Block {
-    fn new(ctx: Context, notifier: &mut Notifier<WindowEvent>) -> Block {
+    fn new(gfx: Gfx, notifier: &mut Notifier<WindowEvent>) -> Block {
         let texture = texture::Raw::load(&PathBuf::from("examples/block.png"))
             .unwrap()
-            .process(&ctx)
+            .process(&gfx)
             .unwrap();
         let sprite = Sprite::new(
             &texture::Ref::new(texture),
@@ -53,16 +53,16 @@ impl Block {
 
 fn main()
 {
-    let ctx = Context::create("Sprite", (800, 600));
-    let renderer = rier::render::Renderer::new(ctx.clone()).unwrap();
+    let gfx = Context::create("Sprite", (800, 600)).gfx();
+    let renderer = rier::render::Renderer::new(gfx.clone()).unwrap();
     let mut notifier = Notifier::new();
-    let mut camera = Camera2D::new(ctx.clone());
-    let block = Block::new(ctx.clone(), &mut notifier);
+    let mut camera = Camera2D::new(gfx.clone());
+    let block = Block::new(gfx.clone(), &mut notifier);
     'main: loop {
-        let (_, h) = ctx.display.get_framebuffer_dimensions();
+        let (_, h) = gfx.display.get_framebuffer_dimensions();
         camera.update();
 
-        for event in ctx.display.poll_events() {
+        for event in gfx.display.poll_events() {
             match event {
                 WindowEvent::Closed => break 'main,
                 WindowEvent::MouseMoved(x, y) =>
@@ -71,11 +71,8 @@ fn main()
             }
         }
 
-        ctx.draw(|mut target| {
-            block.sprite.borrow().render(&mut target, &renderer, &camera).unwrap();
-
-        });
-
-
+        gfx.frame(|| {
+            block.sprite.borrow().render(&renderer, &camera);
+        }).unwrap();
     }
 }

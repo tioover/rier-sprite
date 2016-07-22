@@ -1,6 +1,6 @@
 [package]
 
-name = "sprite"
+name = "rier-sprite"
 version = "0.0.1"
 authors = ["tioover <tioover@gmail.com>"]
 license = "MIT"
@@ -10,7 +10,7 @@ description = "A sprite support library for rier."
 
 
 [lib]
-name = "sprite"
+name = "rier_sprite"
 path = "src/lib.rs"
 
 [dependencies]
