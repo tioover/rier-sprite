@@ -17,12 +17,12 @@ struct Block {
 
 impl Block {
     fn new(gfx: Gfx, notifier: &mut Notifier<WindowEvent>) -> Block {
-        let texture = texture::Raw::load(&PathBuf::from("examples/block.png"))
+        let texture = texture::RawImage::load(&PathBuf::from("examples/block.png"))
             .unwrap()
             .process(&gfx)
             .unwrap();
         let sprite = Sprite::new(
-            &texture::Ref::new(texture),
+            Rc::new(texture),
             texture::Rect { w: 256, h: 256, x: 0, y: 0 },
             (100.0, 100.0));
         let block = Block{ sprite: Rc::new(RefCell::new(sprite)) };
@@ -40,11 +40,11 @@ impl Block {
                         Some(sprite) => {
                             let mut sprite = sprite.borrow_mut();
                             sprite.transform.set_position(x as f32, y as f32, 0.0);
-                            Return::None
+                            Return::Next
                         }
                     }
                 },
-                _ => Return::None,
+                _ => Return::Next,
             }
         })
     }

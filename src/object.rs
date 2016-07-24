@@ -1,4 +1,6 @@
-use rier::{Id, Transform, Camera2D, texture};
+use std::rc::Rc;
+use rier::{Id, Transform, Camera2D};
+use rier::texture::{Texture, Rect};
 use rier::render::Renderer;
 use graphics::Graphics;
 
@@ -16,7 +18,7 @@ pub struct Sprite {
 
 impl Sprite {
     /// Creates new sprite object.
-    pub fn new(tex: &texture::Ref, rect: texture::Rect, (width, height): (f32, f32)) -> Sprite {
+    pub fn new(tex: Rc<Texture>, rect: Rect, (width, height): (f32, f32)) -> Sprite {
         Sprite {
             id: Id::new(),
             graphics: Graphics::new(tex, rect, width, height),

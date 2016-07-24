@@ -1,4 +1,6 @@
-use rier::{Gfx, Transform, Camera2D, AsMatrix, Cache, texture, mesh};
+use std::rc::Rc;
+use rier::{Gfx, Transform, Camera2D, AsMatrix, Cache, mesh};
+use rier::texture::{Texture, Rect};
 use rier::render;
 
 
@@ -44,13 +46,13 @@ pub struct Graphics {
     opacity: f32,
     width: f32,
     height: f32,
-    texture: texture::Ref,
-    texture_rect: texture::Rect,
+    texture: Rc<Texture>,
+    texture_rect: Rect,
     mesh_cache: Cache<Mesh>,
 }
 
 impl Graphics {
-    pub fn new(texture: &texture::Ref, tex_rect: texture::Rect, width: f32, height: f32)
+    pub fn new(texture: Rc<Texture>, tex_rect: Rect, width: f32, height: f32)
         -> Graphics
     {
         Graphics {
@@ -88,10 +90,11 @@ impl Graphics {
 
         let camera = camera.array();
         let transform = transform.array();
+        let tex = &*self.texture;
 
         let uniforms = uniform!
         {
-            tex: self.texture.clone(),
+            tex: tex,
             opacity: self.opacity,
             camera: *camera,
             transform: *transform,
