@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use rier::{Gfx, Transform, Camera2D, AsMatrix, Cache, mesh};
+use rier::{Renderer, Transform, Camera2D, Cache, mesh};
 use rier::texture::{Texture, Rect};
 use rier::render;
 
@@ -27,8 +27,7 @@ impl Vertex {
 implement_vertex!{ Vertex, position, tex_coords }
 
 
-
-impl render::Graphics for Graphics {
+impl render::Shader for Graphics {
     type Vertex = Vertex;
 
     fn vertex() -> &'static str {
@@ -66,7 +65,7 @@ impl Graphics {
     }
 
     #[cfg_attr(rustfmt, rustfmt_skip)]
-    fn get_mesh<'a>(&'a self, gfx: &Gfx) -> &'a Mesh {
+    fn get_mesh<'a>(&'a self, renderer: &Renderer<Self>) -> &'a Mesh {
         self.mesh_cache.get(|| {
             // Generate mash.
             let (width, height) = (self.width, self.height);
@@ -77,7 +76,7 @@ impl Graphics {
                            Vertex::new(width,    0.0, x + w, y + 0),
                            Vertex::new(width, height, x + w, y + h),];
             let indices = [0, 1, 2, 3, 2, 0];
-            Mesh::with_indices(gfx, &verties, &indices).unwrap()
+            Mesh::with_indices(renderer, &verties, &indices).unwrap()
         })
     }
 
@@ -86,21 +85,17 @@ impl Graphics {
                   renderer: &render::Renderer<Self>,
                   camera: &Camera2D,
                   transform: &Transform) {
-
-
-        let camera = camera.array();
-        let transform = transform.array();
         let tex = &*self.texture;
 
         let uniforms = uniform!
         {
             tex: tex,
             opacity: self.opacity,
-            camera: *camera,
-            transform: *transform,
+            camera: camera,
+            transform: transform,
         };
 
-        let mesh = self.get_mesh(&renderer.gfx);
+        let mesh = self.get_mesh(renderer);
         renderer.draw(mesh, &uniforms).unwrap();
     }
 }

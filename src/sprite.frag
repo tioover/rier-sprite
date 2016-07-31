@@ -1,4 +1,4 @@
-#version 140
+#version 330 core
 uniform sampler2D tex;
 uniform float opacity;
 in vec2 uv;

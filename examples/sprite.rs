@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::cell::RefCell;
 use rier::texture;
-use rier::{Context, Gfx, WindowEvent, Camera2D};
+use rier::{Context, Gfx, WindowEvent, Camera2D, Loop};
 use rier::loader::Resource;
 use rier::event::{Notifier, Return};
 use rier_sprite::Sprite;
@@ -40,6 +40,7 @@ impl Block {
                         Some(sprite) => {
                             let mut sprite = sprite.borrow_mut();
                             sprite.transform.set_position(x as f32, y as f32, 0.0);
+                            sprite.transform.dirty();
                             Return::Next
                         }
                     }
@@ -58,13 +59,14 @@ fn main()
     let mut notifier = Notifier::new();
     let mut camera = Camera2D::new(gfx.clone());
     let block = Block::new(gfx.clone(), &mut notifier);
-    'main: loop {
+    let main_loop = Loop::new(|_delta| {
+        use rier::main_loop::Return::*;
         let (_, h) = gfx.display.get_framebuffer_dimensions();
         camera.update();
 
         for event in gfx.display.poll_events() {
             match event {
-                WindowEvent::Closed => break 'main,
+                WindowEvent::Closed => return Exit,
                 WindowEvent::MouseMoved(x, y) =>
                     notifier.notify(WindowEvent::MouseMoved(x, h as i32 - y)),
                 e => notifier.notify(e),
@@ -74,5 +76,7 @@ fn main()
         gfx.frame(|| {
             block.sprite.borrow().render(&renderer, &camera);
         }).unwrap();
-    }
+        Next
+    });
+    main_loop.start();
 }
